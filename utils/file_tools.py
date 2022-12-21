@@ -24,6 +24,7 @@ def load_file(path: str) -> List[object]:
                 out_list.append(pickle.load(f))
             except EOFError:
                 break
+    os.remove(file_path_lock)
     return out_list
 
 
@@ -35,3 +36,16 @@ def set_dir(filepath):
     '''
     if not os.path.exists(filepath):
         os.mkdir(filepath)
+
+def get_files(path:str):
+    files_path = []
+    iter_dirs(path, files_path)
+    return files_path
+
+def iter_dirs(path: str, out: List[str]):
+    for file in os.listdir(path):
+        file_path = os.path.join(path,file)
+        if os.path.isfile(file_path):
+            out.append(file_path)
+        elif os.path.isdir(file_path):
+            iter_dirs(file_path, out)

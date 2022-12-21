@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 
 from utils.grad_tools import load_grad,save_grad
 
-epochs = 2
+epochs = 1
 device = torch.device("cpu")
 batch_size = 64
 train_loader = torch.utils.data.DataLoader(
@@ -48,9 +48,12 @@ class simple_model(nn.Module):
 
 
 def train(model, mode="train"):
-    model = model.to(device)
+
     optimizer = optim.Adam(model.parameters(), lr=0.001)
+    model = model.to(device)
     criteon = nn.CrossEntropyLoss()
+
+
     for epoch in range(epochs):
         for batch_idx, (data, target) in enumerate(train_loader):
             if mode == "train":
@@ -59,17 +62,17 @@ def train(model, mode="train"):
                 optimizer.zero_grad()
                 loss.backward()
 
-                # 保存测试
-                save_grad("./test", model)
-                optimizer.zero_grad()
-                a = list(model.named_parameters())[0][1]
-                d = torch.zeros_like(a.data)
-                a.data = d
-
-                load_grad("./test", model)
+                # # 保存测试
+                # save_grad("./test", model)
+                # optimizer.zero_grad()
+                # a = list(model.named_parameters())[0][1]
+                # d = torch.zeros_like(a.data)
+                # a.data = d
+                #
+                # load_grad("./test", model)
 
                 optimizer.step()
-                if batch_idx % 1000 == 0:
+                if batch_idx % 100 == 0:
                     print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                         epoch, batch_idx * len(data), len(train_loader.dataset),
                                100. * batch_idx / len(train_loader), loss.item()))

@@ -24,7 +24,7 @@ class MasterNode:
         self.model = model
         self.optim = optim
 
-    def updata_parameter(self, grads: List[TensorCache]):
+    def updata(self, grads: List[TensorCache]):
         """
         根据梯度更新参数
         :return:
@@ -42,3 +42,15 @@ class MasterNode:
         :return: tensor列表形式返回
         """
         return [TensorCache(n, w.data) for n,w in list(self.model.named_parameters())]
+
+    def updata_v2(self, params: List[TensorCache]):
+        """
+        取参数均值
+        :return:
+        """
+        # 清空梯度
+        self.optim.zero_grad()
+        data_maps = {cache.get_key(): torch.from_numpy(cache.get_tensor()) for cache in params}
+        for name, param in list(self.model.named_parameters()):
+            param.data = data_maps.get(name)
+        self.optim.step()

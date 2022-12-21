@@ -28,8 +28,9 @@ class WorkerNode:
         :return:
         """
         grad_maps = {cache.get_key(): cache.get_tensor() for cache in params}
-        for name, param in list(self.model.named_parameters()):
-            param.data = grad_maps.get(name).to(self.device)
+        with torch.no_grad():
+            for name, param in list(self.model.named_parameters()):
+                param.copy_(grad_maps.get(name))
 
     def get_grad(self, loss: torch.Tensor) -> List[TensorCache]:
         """
@@ -41,6 +42,13 @@ class WorkerNode:
         loss.backward()
         gradTensors = [TensorCache(n, w.grad.numpy()) for w, n in zip(self.model.parameters(), self.model.state_dict())]
         return gradTensors
+
+    def get_params(self) -> List[TensorCache]:
+        """
+        传播变量
+        """
+        return [TensorCache(n, w.data.cpu().numpy()) for w, n in zip(self.model.parameters(), self.model.state_dict())]
+
 
     def get_device(self, model):
         return list(model.parameters())[0].device
