@@ -13,6 +13,7 @@ def save_buff(objs: List[object], file_path: str):
         with open(file_path, "wb") as f:
             for obj in objs:
                 pickle.dump(obj, f)
+    if os.path.exists(file_path_lock): os.remove(file_path_lock)
 
 def load_file(path: str) -> List[object]:
     file_path_lock = path + ".lock"
@@ -24,7 +25,7 @@ def load_file(path: str) -> List[object]:
                 out_list.append(pickle.load(f))
             except EOFError:
                 break
-    os.remove(file_path_lock)
+    if os.path.exists(file_path_lock): os.remove(file_path_lock)
     return out_list
 
 

@@ -43,6 +43,7 @@ class WorkerNode:
         gradTensors = [TensorCache(n, w.grad.numpy()) for w, n in zip(self.model.parameters(), self.model.state_dict())]
         return gradTensors
 
+    # fixme 后期换成static 不用param
     def get_params(self) -> List[TensorCache]:
         """
         传播变量
