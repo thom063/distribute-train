@@ -24,17 +24,17 @@ class MasterNode:
         self.model = model
         self.optim = optim
 
-    def updata(self, grads: List[TensorCache]):
-        """
-        根据梯度更新参数
-        :return:
-        """
-        # 清空梯度
-        self.optim.zero_grad()
-        grad_maps = {cache.get_key(): torch.from_numpy(cache.get_tensor()) for cache in grads}
-        for name, param in list(self.model.named_parameters()):
-            param.grad = grad_maps.get(name)
-        self.optim.step()
+    # def updata(self, grads: List[TensorCache]):
+    #     """
+    #     根据梯度更新参数
+    #     :return:
+    #     """
+    #     # 清空梯度
+    #     self.optim.zero_grad()
+    #     grad_maps = {cache.get_key(): torch.from_numpy(cache.get_tensor()) for cache in grads}
+    #     for name, param in list(self.model.named_parameters()):
+    #         param.grad = grad_maps.get(name)
+    #     self.optim.step()
 
     def get_parameter(self):
         """
@@ -53,4 +53,16 @@ class MasterNode:
         data_maps = {cache.get_key(): torch.from_numpy(cache.get_tensor()) for cache in params}
         for name, param in list(self.model.named_parameters()):
             param.data = data_maps.get(name)
+        self.optim.step()
+
+    def updata(self, params: List[TensorCache]):
+        """
+        取参数均值
+        :return:
+        """
+        # 清空梯度
+        self.optim.zero_grad()
+        data_maps = {cache.get_key(): cache.get_tensor() for cache in params}
+        for name, param in list(self.model.named_parameters()):
+            param.data.copy_(data_maps.get(name))
         self.optim.step()

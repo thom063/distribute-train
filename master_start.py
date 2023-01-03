@@ -28,4 +28,4 @@ if __name__ == '__main__':
     model = lenet_model()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     m = MasterManager(model, optimizer, worker_cache_path, master_cache_path)
-    m.monitor2(2)
+    m.monitor(3)
